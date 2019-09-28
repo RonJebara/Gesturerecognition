@@ -1,68 +1,56 @@
-#organize imports
 import cv2
 import imutils
 import numpy as np
 
-#global variables
 bg = None
 
-#To find the running average over the background
-def run_avg(image, aWeight):
+#Find the runnig naverage over the background
+
+def run_avg(image, aWeight) :
     global bg
-    #intitialize the background
+    #Initiliaze the background
     if bg is None:
-        bg = image.copy().astype("float")
-        return
+            bg = image.copy().astype("float")
+            return
+    #Compute the weighted average
+    cv2.accumulateWeighted(image, bg, aWeight)
 
-    #comput weighted average, accumulate it and update the background
-    cv2.accumalteWeighted(image, bg, aWeight)
-
-#To segment the region of hand in the image
-def segement(image, threshold=25):
+#Segment the region of hand in the image
+def segment(image, threshold=25) :
     global bg
-    #find the absolute difference between background and current frame
+    #Find the absolute difference between background and current frame
     diff = cv2.absdiff(bg.astype("uint8"), image)
-
-    #threshold the diff image so that we get the foreground
-    threshold = cv2.threshold(diff, threshold, 225, cv2.THRESH_BINARY)[1]
-
-    #get the contours in the threshold image
+    #Threshold the different image so that we get the foreground
+    thresholded = cv2.threshold(diff, threshold, 255, cv2.THRESH_BINARY)[1]
+    #get the contours in the thresholded image
     (cnts, _) = cv2.findContours(thresholded.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-    #return none, if no contours detected
+    #Return None if no contours detected
     if len(cnts) == 0:
         return
     else:
-        #based on contour area, get the maximum contour which is the hand
-        segemented = max(cnts, key=cv2.contourArea)
+        #Get the max contour which is the hand
+        segmented = max(cnts, key=cv2.contourArea)
         return (thresholded, segmented)
 
-#Main Function
-if __name__ == "__main__":
-    #initialize weight for running average
-    aWeight = 0.5
-
-    #get the reference to the webcam
+#Main function
+if __name__ =="__main__" :
+    #Initialize weight for running average
+    aWeight = 0.1
+    #Get the reference to the webcam
     camera = cv2.VideoCapture(0)
-
-    #region of interest (ROI) coordinates
-    top, right, bottom, left = 10, 350, 225, 590
-
-    #initialize num of frames
+    #Region of interest coordinates
+    top, right, bottom, left = 0, 300, 400, 790
+    #Number of frames
     num_frames = 0
-
-    #keep looping, until interrupted
-    while (True):
-        #get the current frame
+    #Keep looping until interrupted
+    while(True):
+        #Get current frame
         (grabbed, frame) = camera.read()
-
-        #resize the frame
+        #Resize the frame
         frame = imutils.resize(frame, width=700)
-
-        #flip the frame so that it is not the mirror view
+        #Flip the frame to prevent mirrior view
         frame = cv2.flip(frame, 1)
-
-        #clone the frame
+        #Clone the frame
         clone = frame.copy()
 
         # get the height and width of the frame
@@ -82,7 +70,6 @@ if __name__ == "__main__":
         else:
             # segment the hand region
             hand = segment(gray)
-
             # check whether hand region is segmented
             if hand is not None:
                 # if yes, unpack the thresholded image and
