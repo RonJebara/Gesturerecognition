@@ -1,1 +1,1 @@
-fuck git
+print("fuck git")
