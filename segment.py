@@ -52,6 +52,7 @@ if __name__ =="__main__" :
         frame = cv2.flip(frame, 1)
         #Clone the frame
         clone = frame.copy()
+
         # get the height and width of the frame
         (height, width) = frame.shape[:2]
 
@@ -74,20 +75,27 @@ if __name__ =="__main__" :
                 # if yes, unpack the thresholded image and
                 # segmented region
                 (thresholded, segmented) = hand
+
                 # draw the segmented region and display the frame
                 cv2.drawContours(clone, [segmented + (right, top)], -1, (0, 0, 255))
                 cv2.imshow("Thesholded", thresholded)
+
         # draw the segmented hand
         cv2.rectangle(clone, (left, top), (right, bottom), (0, 255, 0), 2)
+
         # increment the number of frames
         num_frames += 1
+
         # display the frame with segmented hand
         cv2.imshow("Video Feed", clone)
+
         # observe the keypress by the user
         keypress = cv2.waitKey(1) & 0xFF
+
         # if the user pressed "q", then stop looping
         if keypress == ord("q"):
             break
+
     # free up memory
-    camera.release()
-    cv2.destroyAllWindows()
+camera.release()
+cv2.destroyAllWindows()
