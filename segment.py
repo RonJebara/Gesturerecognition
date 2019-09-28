@@ -39,7 +39,7 @@ if __name__ =="__main__" :
     #Get the reference to the webcam
     camera = cv2.VideoCapture(0)
     #Region of interest coordinates
-    top, right, bottom, left = 0, 300, 400, 790
+    top, right, bottom, left = 0, 100, 400, 790
     #Number of frames
     num_frames = 0
     #Keep looping until interrupted
